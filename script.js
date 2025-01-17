@@ -12,6 +12,7 @@ const adminSection = document.getElementById("adminSection");
 
 // Admin Authentication
 function checkAdminAccess() {
+  console.log("Password prompt should appear now.");
   const input = prompt("Enter the admin password:");
   if (input === adminPassword) {
     alert("Access granted!");
