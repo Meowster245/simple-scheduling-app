@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Scheduling App</title>
+  <style>
+    /* Basic styles to hide admin section by default */
+    #adminSection {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <h1>Simple Scheduling App</h1>
@@ -19,10 +25,17 @@
     <button type="submit">Submit</button>
   </form>
 
-  <!-- Placeholder for queue -->
+  <!-- Placeholder for Queue -->
   <h2>Queue</h2>
   <div id="queueList">
     <p>No requests yet.</p>
+  </div>
+
+  <!-- Admin Section (Hidden by Default) -->
+  <div id="adminSection">
+    <h2>Admin Controls</h2>
+    <p>You can approve requests below:</p>
+    <ul id="approvalList"></ul>
   </div>
 
   <script src="script.js"></script>

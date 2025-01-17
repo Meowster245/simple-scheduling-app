@@ -1,54 +1,72 @@
-const form = document.getElementById("requestForm");
+// Admin Password (change this to a secure password)
+const adminPassword = "securepassword";
+
+// Queue to store user requests
+let queue = [];
+
+// DOM Elements
+const requestForm = document.getElementById("requestForm");
 const queueList = document.getElementById("queueList");
+const approvalList = document.getElementById("approvalList");
+const adminSection = document.getElementById("adminSection");
 
-let queue = []; // This will hold the requests temporarily
-
-// Handle form submission
-form.addEventListener("submit", (event) => {
-  event.preventDefault(); // Prevent the form from reloading the page
-
-  // Get user input
-  const name = document.getElementById("name").value;
-  const time = document.getElementById("time").value;
-
-  // Add request to the queue
-  const newRequest = { name, time, status: "pending" };
-  queue.push(newRequest);
-
-  // Update the queue display
-  updateQueueDisplay();
-
-  // Reset the form
-  form.reset();
-});
-
-// Function to update the queue display
-function updateQueueDisplay() {
-  // Clear the current queue display
-  queueList.innerHTML = "";
-
-  // Add each request to the display
-  queue.forEach((request, index) => {
-    const requestDiv = document.createElement("div");
-    requestDiv.textContent = `${request.name} - ${request.time} - ${request.status}`;
-    
-    // Approve button
-    const approveButton = document.createElement("button");
-    approveButton.textContent = "Approve";
-    approveButton.addEventListener("click", () => {
-      approveRequest(index);
-    });
-
-    requestDiv.appendChild(approveButton);
-    queueList.appendChild(requestDiv);
-  });
+// Admin Authentication
+function checkAdminAccess() {
+  const input = prompt("Enter the admin password:");
+  if (input === adminPassword) {
+    alert("Access granted!");
+    adminSection.style.display = "block"; // Show the admin section
+  } else {
+    alert("Access denied!");
+  }
 }
 
-// Function to approve a request
-function approveRequest(index) {
-  queue[index].status = "approved";
-  updateQueueDisplay();
+// Call the admin check automatically on page load
+window.onload = checkAdminAccess;
 
-  // Simulate sending a message
-  alert(`Message sent to ${queue[index].name}: Your time is approved!`);
+// Handle form submission
+requestForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  // Get user input
+  const name = event.target.name.value;
+  const time = event.target.time.value;
+
+  // Add the request to the queue
+  queue.push({ name, time });
+  updateQueue();
+
+  // Reset the form
+  requestForm.reset();
+});
+
+// Update the queue display
+function updateQueue() {
+  if (queue.length === 0) {
+    queueList.innerHTML = "<p>No requests yet.</p>";
+    approvalList.innerHTML = ""; // Clear admin approval list
+    return;
+  }
+
+  // Update queue for regular users
+  queueList.innerHTML = queue
+    .map((req, index) => `<p>${req.name} requested ${req.time}</p>`)
+    .join("");
+
+  // Update approval list for admin
+  approvalList.innerHTML = queue
+    .map(
+      (req, index) =>
+        `<li>${req.name} requested ${req.time} 
+         <button onclick="approveRequest(${index})">Approve</button>
+        </li>`
+    )
+    .join("");
+}
+
+// Approve a request (removes it from the queue)
+function approveRequest(index) {
+  const approved = queue.splice(index, 1)[0];
+  alert(`Request approved for ${approved.name} at ${approved.time}`);
+  updateQueue();
 }
